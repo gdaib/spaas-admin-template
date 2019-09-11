@@ -10,6 +10,7 @@
 
 ## Table of Contents
 
+- **[Changelog](#changelog)**
 - **[Feature](#feature)**
 - **[快速开始](#快速开始)**
 - **[工程结构](#工程结构)**
@@ -24,6 +25,9 @@
 - **[单独部署](#单独部署)**
 - **[快速生成文件模板](#快速生成文件模板)**
 - **[commit规范](#commit规范)**
+
+## Changelog
+[详细更新内容](https://github.com/spaasteam/spaas-admin-template/blob/master/CHANGELOG.md)
 
 ## Feature
 

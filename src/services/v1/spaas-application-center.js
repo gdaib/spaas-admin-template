@@ -9,4 +9,4 @@ const basicUrl = `${serviceType}${apiVersion}`;
  */
 // eslint-disable-next-line import/prefer-default-export
 export const appOptions = centerId =>
-  axios.$get(`${basicUrl}/infos?page=1&size=999&status=0&centerId=${centerId}`);
+  axios.$get(`${basicUrl}/infos?page=1&size=999&centerId=${centerId}`);

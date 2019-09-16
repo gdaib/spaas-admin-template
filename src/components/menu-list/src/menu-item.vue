@@ -18,7 +18,7 @@ export default {
       return this.data && this.data.children && this.data.children.length;
     },
     isUrl() {
-      const urlString = this.data.icon;
+      const urlString = this.data.iconUrl;
       const reg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
       return urlString && reg.test(urlString);
     },
@@ -59,12 +59,13 @@ export default {
     },
     // 渲染有无子菜单的主菜单
     renderMenuItem(h) {
+      const {pathUrl, url} = this.data;
       return h(
         'el-menu-item',
         {
           class: 'menu-item-container',
           props: {
-            index: this.data.url,
+            index: `${pathUrl || url}`,
           },
         },
         [this.renderIcon(h), this.renderTitleSlot(h)],
@@ -87,7 +88,7 @@ export default {
         class: 'icon-default',
       });
       let Icon = this.isUrl ? this.renderImageIcon(h) : this.renderSvgIcon(h);
-      if (!this.data.icon) {
+      if (!this.data.iconUrl) {
         Icon = DefaultIcon;
       }
       return h(
@@ -103,7 +104,7 @@ export default {
       return h('img', {
         class: 'image-icon',
         attrs: {
-          src: this.data.icon,
+          src: this.data.iconUrl,
         },
       });
     },
@@ -112,7 +113,7 @@ export default {
       return h('svg-icon', {
         class: 'svg-icon',
         props: {
-          iconClass: this.data.icon,
+          iconClass: this.data.iconUrl,
         },
       });
     },

@@ -9,11 +9,17 @@ const basicUrl = `${serviceType}${apiVersion}`;
 const tenantUrl = `${serviceTenantType}${apiVersion}`;
 const adminUrl = `${serviceAdminType}${apiVersion}`;
 
+import {userInfo, subscribeInfo, routers} from '@/const/config';
+
+const isSingleBuild = process.env.SINGLE_BUILD === '1';
+
 /**
  *
  * @param {*} userInfo
  */
-export const loginByUsername = userInfo => axios.$post(`${basicUrl}/login`, userInfo);
+export const loginByUsername = isSingleBuild
+  ? async () => userInfo
+  : userInfo => axios.$post(`${basicUrl}/login`, userInfo);
 
 /**
  *
@@ -22,7 +28,9 @@ export const loginByUsername = userInfo => axios.$post(`${basicUrl}/login`, user
  * @param {number} appId  产品ID
  * @param {number} status 3 是通过审核
  */
-export const getProductList = params => axios.$get(`${adminUrl}/spaasProductSubscribe`, {params});
+export const getProductList = isSingleBuild
+  ? async () => subscribeInfo
+  : params => axios.$get(`${adminUrl}/spaasProductSubscribe`, {params});
 // 获取用户权限菜单
 /**
  *
@@ -31,4 +39,6 @@ export const getProductList = params => axios.$get(`${adminUrl}/spaasProductSubs
  * @param {string} tenantId 租户ID
  * @param {number} appId  产品ID
  */
-export const getMenu = params => axios.$get(`${tenantUrl}/menus`, {params});
+export const getMenu = isSingleBuild
+  ? async () => routers
+  : params => axios.$get(`${tenantUrl}/menus`, {params});

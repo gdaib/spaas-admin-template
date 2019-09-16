@@ -3,11 +3,11 @@
     <!--样式在layout/login-->
     <div class="main">
       <el-form :model="form" status-icon :rules="rules" ref="loginForm" class="login-content">
-        <el-form-item label="" prop="code">
+        <el-form-item label="" prop="enterpriseId">
           <el-input
             placeholder="租户ID"
-            type="code"
-            v-model.trim="form.code"
+            type="enterpriseId"
+            v-model.trim="form.enterpriseId"
             auto-complete="off"
             @keyup.enter.native="login"
           ></el-input>
@@ -78,7 +78,7 @@ export default {
       form: {
         username: '',
         password: '',
-        code: '',
+        enterpriseId: '',
       },
       rules: {
         username: [
@@ -94,7 +94,7 @@ export default {
             trigger: 'blur',
           },
         ],
-        code: [
+        enterpriseId: [
           {
             required: true,
             trigger: 'blur',
@@ -113,8 +113,8 @@ export default {
           const params = {
             username: this.form.username,
             password: this.form.password,
-            channel: 'xPaaS',
-            code: this.form.code,
+            channel: 'pc',
+            enterpriseId: this.form.enterpriseId,
           };
           this.$store
             .dispatch('loginByUsername', params)

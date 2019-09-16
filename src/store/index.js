@@ -8,9 +8,7 @@
 import cookie from 'js-cookie';
 import cookieKeys from '@/const/cookie-keys';
 
-import {getXpaasTag} from '@/services/v1/deepexi-dashboard';
-import {getUserMenuTree, loginByUsername} from '@/services/v1/spaas-console-api';
-import {adminUser} from '@/services/v1/spaas-enterprise-contact';
+import {loginByUsername, getProductList, getMenu} from '@/services/v1/deepexi-cloud';
 
 import meta from '@/const/meta.js';
 
@@ -28,7 +26,6 @@ export const state = () => ({
   meta: {},
 
   permission: {
-    thirdId: '',
     menuList: [],
     menuReady: false,
     spaName: meta.spaName,
@@ -41,12 +38,6 @@ export const state = () => ({
 });
 
 export const mutations = {
-  userMenuTreeReady(state, payload) {
-    state.permission.menuReady = payload;
-  },
-  setCenterId(state, payload) {
-    state.permission.centerId = payload.centerId;
-  },
   login(state, payload) {
     cookieKeys.forEach(key => {
       state[key] = payload[key];
@@ -78,85 +69,61 @@ export const mutations = {
 
 export const actions = {
   // 用户名账号登录
-  async loginByUsername({commit, dispatch}, userInfo) {
+  async loginByUsername({commit}, userInfo) {
     try {
-      const res = await loginByUsername(userInfo);
+      const {payload} = await loginByUsername(userInfo);
 
-      const data = res.payload;
-
-      commit('login', data);
+      commit('login', {...payload, ...payload.params});
 
       commit('update', {
-        user: data,
+        user: payload,
       });
-      dispatch('fetchThirdId', {
-        tenantId: data.tenantId,
-      });
-      return data;
+
+      return payload;
     } catch (err) {
       return err;
     }
   },
-
-  // 获取头部列表的thirdId
-  async fetchThirdId({commit, dispatch, state}, {tenantId}) {
-    const {payload} = await adminUser(tenantId);
-
-    const {thirdId} = payload || {};
-
-    commit('update', {
-      permission: {
-        thirdId,
-      },
-    });
-
+  // 请求中心Id
+  async fetchAppId({dispatch, commit}) {
     try {
-      cookie.set('thirdId', thirdId, {
-        path: cookiePath,
+      const {payload} = await getProductList({
+        status: 3,
+        productName: meta.spaName,
       });
-      const headMenu = await dispatch('fetchHeadMenu', {
-        thirdId,
-      });
+      const productList = payload.content;
+      const [product] = productList.filter(item => item.productName === meta.spaName);
+      if (!product) return;
+      const {productId: centerId} = product;
+      dispatch('fetchMenu', centerId, {root: true});
 
-      // 根据当前的项目名称来请求左侧菜单
-      for (const item of headMenu) {
-        if (item.name === state.permission.spaName) {
-          dispatch('fetchUserMenuTree', {
-            appId: item.id,
-          });
-          break;
-        }
-      }
-    } catch (e) {
-      console.error('fetchHeadMenu error: ', e);
+      commit('update', {
+        permission: {
+          centerId,
+        },
+      });
+    } catch (error) {
+      return error;
     }
   },
-  // 根据thirdId获取头部导航栏列表
-  async fetchHeadMenu({commit}, {thirdId}) {
-    const headMenuListRes = await getXpaasTag(thirdId);
-    const payload = headMenuListRes.payload || [];
-    commit('update', {
-      permission: {
-        headMenuList: payload,
-      },
-    });
-    return payload;
-  },
-  // 根据appId获取左侧菜单, 并设置当前的mainHead值
-  async fetchUserMenuTree({commit}, {appId}) {
-    const userMenuTreeRes = await getUserMenuTree(appId);
-    const payload = userMenuTreeRes.payload || [];
-    // 设置中心ID
-    commit('setCenterId', {
-      centerId: appId,
-    });
-
-    // 获取路由对应的页面名
-    commit('update', {
-      permission: {
-        menuList: payload,
-      },
-    });
-    commit('userMenuTreeReady', true);
+  // 请求菜单
+  async fetchMenu({commit}, appId) {
+    try {
+      const params = {
+        appId,
+        code: meta.menuCode,
+        tenantId: state.tenantId,
+      };
+      const {payload} = await getMenu(params);
+      commit('update', {
+        permission: {
+          menuList: payload,
+        },
+      });
+    } catch (error) {
+      return error;
+    } finally {
+      commit('update', {permission: {menuReady: true}});
+    }
   },
 };

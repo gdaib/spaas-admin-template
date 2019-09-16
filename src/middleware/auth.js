@@ -56,7 +56,7 @@ export default async ({store, redirect, env, route}) => {
   if (!store.state.userId) {
     store.commit('update', cookieInfo);
     try {
-      await store.dispatch('fetchThirdId', {
+      await store.dispatch('fetchAppId', {
         tenantId,
       });
     } catch (e) {

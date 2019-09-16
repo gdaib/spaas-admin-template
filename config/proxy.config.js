@@ -9,11 +9,13 @@ module.exports = {
     '/spaas-enterprise-contact': mockServer,
     '/spaas-console-api': mockServer,
     '/spaas-application-center': apiServer,
+    '/deepexi-cloud': apiServer,
   },
   dev: {
     '/deepexi-dashboard': apiServer,
     '/spaas-enterprise-contact': apiServer,
     '/spaas-console-api': apiServer,
     '/spaas-application-center': apiServer,
+    '/deepexi-cloud': apiServer,
   },
 };

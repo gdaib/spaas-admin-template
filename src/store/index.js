@@ -8,11 +8,12 @@
 import cookie from 'js-cookie';
 import cookieKeys from '@/const/cookie-keys';
 
-import {loginByUsername, getProductList, getMenu} from '@/services/v1/deepexi-cloud';
+import {loginByUsername, getProductList, getMenu, getUserDetail} from '@/services/v1/deepexi-cloud';
 
 import meta from '@/const/meta.js';
 
 const cookiePath = process.env.COOKIE_PATH;
+const cookieDomain = process.env.COOKIE_DOMAIN;
 
 const isObject = value => Object.prototype.toString.call(value) === '[object Object]';
 
@@ -43,6 +44,7 @@ export const mutations = {
       state[key] = payload[key];
       cookie.set(key, payload[key], {
         path: cookiePath,
+        domain: cookieDomain,
       });
     });
   },
@@ -51,6 +53,7 @@ export const mutations = {
       state[key] = '';
       cookie.remove(key, {
         path: cookiePath,
+        domain: cookieDomain,
       });
     });
     // 清空state，跳转到login页的逻辑交给路由守卫
@@ -81,7 +84,23 @@ export const actions = {
 
       return payload;
     } catch (err) {
-      return err;
+      return Promise.reject(err);
+    }
+  },
+  // 根据token获取用户信息
+  async getUserInfo({commit, state}) {
+    try {
+      const {payload} = await getUserDetail(state.token);
+      commit('update', {
+        user: payload,
+        userId: payload.params.userId,
+        username: payload.username,
+        tenantId: payload.tenantId,
+      });
+
+      return payload.tenantId;
+    } catch (error) {
+      console.log(error);
     }
   },
   // 请求中心Id

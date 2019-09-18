@@ -26,6 +26,14 @@ export default async ({store, redirect, env, route}) => {
   const {NO_LOGIN} = env;
   const {path} = route;
 
+  const cookieInfo = {};
+
+  cookieKeys.forEach(key => {
+    cookieInfo[key] = cookie.get(key);
+  });
+
+  const {token} = cookieInfo;
+
   // 开发时可以用 NO_LOGIN 跳过路由鉴权
   if (NO_LOGIN > 0) return;
 
@@ -38,27 +46,18 @@ export default async ({store, redirect, env, route}) => {
     return;
   }
 
-  const cookieInfo = {};
-
-  cookieKeys.forEach(key => {
-    cookieInfo[key] = cookie.get(key);
-  });
-
-  const {userId, token, tenantId} = cookieInfo;
-
   // 未登录
-  if (!userId || !token) {
+  if (!token) {
     redirect(LOGIN_PATH);
     return;
   }
 
   // 已登录但是state因刷新丢失
-  if (!store.state.userId) {
+  if (store.state.userId === '') {
     store.commit('update', cookieInfo);
     try {
-      await store.dispatch('fetchAppId', {
-        tenantId,
-      });
+      await store.dispatch('getUserInfo');
+      await store.dispatch('fetchAppId');
     } catch (e) {
       console.error('auth error: ', e);
     }

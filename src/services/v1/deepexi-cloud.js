@@ -14,7 +14,7 @@ import {userInfo, subscribeInfo, routers} from '@/const/config';
 const isSingleBuild = process.env.SINGLE_BUILD === '1';
 
 /**
- *
+ * @description 登录接口
  * @param {*} userInfo
  */
 export const loginByUsername = isSingleBuild
@@ -22,23 +22,27 @@ export const loginByUsername = isSingleBuild
   : userInfo => axios.$post(`${basicUrl}/login`, userInfo);
 
 /**
- *
+ * @description 获取中心Id
  * @param {*} params
- * @param {string} tenantId 租户ID
- * @param {number} appId  产品ID
- * @param {number} status 3 是通过审核
+ * @param {string} tenantId 租户ID
  */
 export const getProductList = isSingleBuild
   ? async () => subscribeInfo
   : params => axios.$get(`${adminUrl}/spaasProductSubscribe`, {params});
+
 // 获取用户权限菜单
 /**
- *
+ * @description 获取菜单资源
  * @param {*} params
- * @param {string} code 资源组 code
- * @param {string} tenantId 租户ID
- * @param {number} appId  产品ID
  */
 export const getMenu = isSingleBuild
   ? async () => routers
   : params => axios.$get(`${tenantUrl}/menus`, {params});
+
+/**
+ * @description 根据token获取用户信息
+ * @param {*} token
+ */
+export const getUserDetail = isSingleBuild
+  ? async () => userInfo
+  : token => axios.$get(`${basicUrl}/token?token=${token}`);

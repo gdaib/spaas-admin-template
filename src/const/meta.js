@@ -24,6 +24,9 @@ const meta = {
 
   // 当前应用名
   spaName: '员工中心',
+
+  // 菜单资源code
+  menuCode: 'spaas-menu',
 };
 
 export default meta;

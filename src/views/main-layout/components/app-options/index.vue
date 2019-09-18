@@ -79,7 +79,9 @@ export default {
     },
   },
   created() {
-    this.centerId && this.getList();
+    if (this.hasHide) {
+      this.centerId && this.getList();
+    }
   },
   methods: {
     getList() {

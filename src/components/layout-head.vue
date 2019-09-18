@@ -47,7 +47,6 @@
 
 <script>
 import {mapMutations} from 'vuex';
-import cookie from 'js-cookie';
 
 export default {
   name: 'LayoutHead',
@@ -89,7 +88,7 @@ export default {
   },
   computed: {
     userName() {
-      return cookie.get('username') || 'sPaaS';
+      return this.$store.state.username || 'sPaaS';
     },
     userImg() {
       return (

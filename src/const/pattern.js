@@ -37,7 +37,7 @@ export const letterDashPattern = /^[a-z-]+$/;
 export const namePattern = /^[a-z0-9][a-z0-9_-]{0,18}[a-z0-9]$/;
 
 // 手机号码验证(新增167/191号段)
-export const phonePattern = /1([38][0-9]|4[579]|5[0-3,5-9]|6[67]|7[0135678]|9[189])\d{8}/;
+export const phonePattern = /^1([38][0-9]|4[579]|5[0-3,5-9]|6[67]|7[0135678]|9[189])\d{8}$/;
 
 // 金额校验(格式可以为浮点数)
 export const amountPattern = /(^[1-9]([0-9]+)?(\.[0-9]{1,3})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/;

@@ -17,6 +17,76 @@
  */
 
 import Vue from 'vue';
+import cookie from 'js-cookie';
+import qs from 'qs';
+
+import cookieKeys from '@/const/cookie-keys';
+
+const codeMessage = {
+  200: '服务器成功返回请求的数据。',
+  201: '新建或修改数据成功。',
+  202: '一个请求已经进入后台排队（异步任务）。',
+  204: '删除数据成功。',
+  400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
+  401: '用户没有权限（令牌、用户名、密码错误）。',
+  403: '用户得到授权，但是访问是被禁止的。',
+  404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
+  406: '请求的格式不可得。',
+  410: '请求的资源被永久删除，且不会再得到的。',
+  422: '当创建一个对象时，发生一个验证错误。',
+  500: '服务器发生错误，请检查服务器。',
+  502: '网关错误。',
+  503: '服务不可用，服务器暂时过载或维护。',
+  504: '网关超时。',
+};
+
+/**
+ * 根据返回的状态码以及错误码来提示用户
+ */
+const remindOrExit = (() => {
+  let timer;
+  return error => {
+    const resp = error.response;
+    const data = resp.data;
+    const status = resp.status;
+    let message = '';
+
+    if (status === 401 || status === 403) {
+      const {exp, msg} = data;
+      // exp: 'exceeds maximum allowed expiration';
+      // message: "No credentials found for given 'iss'";
+      // 如果有exp字段则认为为登录超时
+      // 没有权限，执行一次logout，然后重新登录
+      if (exp) {
+        message = '登陆超时，请重新登录！';
+      } else {
+        message = '您已通过其他浏览器登录,请退出后再登陆！';
+      }
+      if (!timer) {
+        Vue.$notify.error({
+          title: '提示',
+          message: msg || message,
+        });
+        timer = setTimeout(() => {
+          cookieKeys.forEach(key => {
+            cookie.remove(key, {
+              path: process.env.COOKIE_PATH,
+              domain: process.env.COOKIE_DOMAIN,
+            });
+          });
+          // 清空state，跳转到login页的逻辑交给路由守卫
+          window.location.reload();
+        }, 3000);
+      }
+    } else {
+      message = data.msg || data.message || '';
+      Vue.$notify.error({
+        title: data.code || status,
+        message: message || codeMessage[status],
+      });
+    }
+  };
+})();
 
 export default function({$axios, store}) {
   $axios.onRequest(config => {
@@ -26,10 +96,21 @@ export default function({$axios, store}) {
       config.headers.common.Authorization = `Bearer ${store.state.token}`;
     }
 
+    const params = {
+      tenantId: store.state.tenantId,
+      userId: store.state.userId,
+      appId: store.state.app.appId,
+      _: new Date().getTime(),
+    };
+    // 去除空值
+    for (const i in params) {
+      if (!params[i]) {
+        delete params[i];
+      }
+    }
+
     url += url.indexOf('?') > -1 ? '&' : '?';
-    url += `tenantId=${store.state.tenantId}&userId=${
-      store.state.userId
-    }&_=${new Date().getTime()}`;
+    url += qs.stringify(params);
 
     config.url = url;
 
@@ -57,18 +138,7 @@ export default function({$axios, store}) {
   $axios.onError(error => {
     if (process.client) {
       // axios 数据结构
-      const resp = error.response,
-        data = resp.data;
-
-      Vue.$notify.error({
-        title: data.code || resp.status,
-        message: data.msg || data.message || data.payload,
-      });
-
-      if (resp.status === 401) {
-        // 没有权限，执行一次logout，然后重新登录
-        store.commit('logout');
-      }
+      remindOrExit(error);
     } else {
       // TODO asyncData 的错误 需要日志监控
       console.log('error', error);

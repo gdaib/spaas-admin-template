@@ -152,7 +152,6 @@ const nuxtConfig = {
       {
         rel: 'icon',
         type: 'image/x-icon',
-        href: 'https://deepexi.oss-cn-shenzhen.aliyuncs.com/deepexi-services/favicon32x32.png',
       },
     ],
   },

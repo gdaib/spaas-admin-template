@@ -66,7 +66,7 @@ const nuxtConfig = {
           'component',
           {
             libraryName: 'element-ui',
-            styleLibraryName: '~node_modules/@femessage/theme-deepexi/lib',
+            styleLibraryName: 'theme-chalk',
           },
         ],
       ],

@@ -1,21 +1,21 @@
 <template>
-  <div class="page-404">
-    <not-exist />
+  <div class="no-permission">
+    <no-permission />
   </div>
 </template>
 
 <script>
-import NotExist from '../components/NotExist/index';
+import NoPermission from '../components/NoPermission/index';
 
 export default {
   components: {
-    NotExist,
+    NoPermission,
   },
 };
 </script>
 
 <style lang="less" scoped>
-.page-404 {
+.no-permission {
   display: flex;
   height: calc(100vh - 140px);
   justify-content: center;

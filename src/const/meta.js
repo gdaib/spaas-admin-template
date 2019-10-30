@@ -1,5 +1,5 @@
 const meta = {
-  favicon: 'https://deepexi.oss-cn-shenzhen.aliyuncs.com/deepexi-services/favicon32x32.png',
+  favicon: 'https://bucket-cdn-prd.oss-cn-shenzhen.aliyuncs.com/spaas-favcion/goods.ico', // 需要根据应用来更改对应的图标
 
   // 登录表单上的图片
   logoLogin:
@@ -23,7 +23,7 @@ const meta = {
   homePageImg: 'https://deepexi.oss-cn-shenzhen.aliyuncs.com/deepexi-services/login-bg.jpg',
 
   // 当前应用名
-  spaName: '员工中心',
+  spaName: '应用中心',
 
   // 菜单资源code
   menuCode: 'spaas-menu',

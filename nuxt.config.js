@@ -66,7 +66,7 @@ const nuxtConfig = {
           'component',
           {
             libraryName: 'element-ui',
-            styleLibraryName: '~node_modules/@femessage/theme-deepexi/lib',
+            styleLibraryName: 'theme-chalk',
           },
         ],
       ],
@@ -152,7 +152,6 @@ const nuxtConfig = {
       {
         rel: 'icon',
         type: 'image/x-icon',
-        href: 'https://deepexi.oss-cn-shenzhen.aliyuncs.com/deepexi-services/favicon32x32.png',
       },
     ],
   },
